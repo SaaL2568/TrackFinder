@@ -23,4 +23,26 @@ button {
 
 #results {
     margin-top: 20px;
+    scroll-behavior: auto;
+    overflow: scroll;
+    height: 300px;
+}
+#results::-webkit-scrollbar {
+    width: 8px;
+}
+#results::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+#results::-webkit-scrollbar-track {
+    background: #222;
+}
+.artist-item {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+}
+
+.artist-item:hover {
+    background: #222;
 }
