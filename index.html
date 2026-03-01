@@ -1,22 +1,372 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-	<title>Spotify Top Tracks</title>
+	<title>TrackFinder — Spotify Playlist Tools</title>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description"
+		content="A powerful Spotify playlist management tool: search artists, build playlists, copy, deduplicate, and reorder tracks.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+		rel="stylesheet">
 	<link rel="stylesheet" href="style.css">
 </head>
 
-<body style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+<body>
 
-	<h1>Spotify Top Tracks Tool</h1>
+	<!-- Toast notification area -->
+	<div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-	<div class="search-box">
-		<input id="searchInput" placeholder="Search artist..." />
-		<button id="searchBtn">Search</button>
+	<div class="app-container">
+		<header class="header">
+			<div class="header-brand">
+				<h1 class="title">
+					<svg class="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none">
+						<circle cx="12" cy="12" r="11" stroke="url(#grad)" stroke-width="2" />
+						<path d="M8 15.5c3-1.5 7-1.5 10 0M7 12c3.5-2 9-2 12.5 0M6.5 8.5c4-2.5 11-2.5 15 0"
+							stroke="url(#grad)" stroke-width="1.5" stroke-linecap="round" />
+						<defs>
+							<linearGradient id="grad" x1="0" y1="0" x2="24" y2="24">
+								<stop stop-color="var(--accent)" />
+								<stop offset="1" stop-color="var(--accent-2)" />
+							</linearGradient>
+						</defs>
+					</svg>
+					TRACKFINDER
+				</h1>
+				<p class="subtitle">Search artists · Build playlists · Manage your music</p>
+			</div>
+			<div class="header-actions">
+				<div id="userInfo" class="user-info" style="display:none;">
+					<img id="userAvatar" class="user-avatar" src="" alt="Avatar" />
+					<span id="userName" class="user-name"></span>
+				</div>
+				<button id="loginBtn" class="btn btn-login" title="Log in with your Spotify account">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+						<path
+							d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381C8.64 5.801 15.6 6.001 20.04 8.4c.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+					</svg>
+					Login with Spotify
+				</button>
+				<button id="themeBtn" class="btn btn-icon" title="Toggle light/dark theme">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round">
+						<circle cx="12" cy="12" r="5" />
+						<line x1="12" y1="1" x2="12" y2="3" />
+						<line x1="12" y1="21" x2="12" y2="23" />
+						<line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+						<line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+						<line x1="1" y1="12" x2="3" y2="12" />
+						<line x1="21" y1="12" x2="23" y2="12" />
+						<line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+						<line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+					</svg>
+				</button>
+				<button id="moreToolsBtn" class="btn btn-accent" title="Open advanced playlist tools">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round">
+						<path
+							d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+					</svg>
+					More Tools
+				</button>
+			</div>
+		</header>
+
+		<div class="controls">
+			<div class="search-box">
+				<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+					stroke-width="2" stroke-linecap="round">
+					<circle cx="11" cy="11" r="8" />
+					<line x1="21" y1="21" x2="16.65" y2="16.65" />
+				</svg>
+				<input id="searchInput" placeholder="Search for an artist..." autocomplete="off" />
+				<button id="searchBtn" class="btn btn-primary">Search</button>
+			</div>
+			<div class="top-controls">
+				<label for="topNSelect" class="control-label">Results:</label>
+				<select id="topNSelect" class="select-control">
+					<option value="10" selected>10</option>
+					<option value="30">30</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+				</select>
+				<button id="addSelectedBtn" class="btn btn-outline" title="Add all checked tracks to your playlist">Add
+					Selected</button>
+			</div>
+		</div>
+
+		<main class="main">
+			<section id="results" class="results" aria-live="polite">
+				<div class="results-topbar">
+					<span id="resultsCount">0</span> results
+				</div>
+				<div class="empty-state">
+					<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"
+						stroke-linecap="round" opacity="0.5">
+						<circle cx="11" cy="11" r="8" />
+						<line x1="21" y1="21" x2="16.65" y2="16.65" />
+					</svg>
+					<p>Search for an artist to see their top tracks</p>
+				</div>
+			</section>
+
+			<aside id="playlist" class="playlist">
+				<div class="playlist-title-row">
+					<h3>Your Playlist</h3>
+					<span class="playlist-badge" id="playlistCount">0</span>
+				</div>
+				<div id="playlistHeader" class="playlist-header">
+					<label class="order-toggle-label"
+						title="Choose where new songs are added. You can also drag and drop to reorder.">
+						<select id="addToTopDropdown" class="select-control select-sm">
+							<option value="top" selected>Add to top (recently added)</option>
+							<option value="bottom">Add to bottom</option>
+						</select>
+					</label>
+				</div>
+				<div class="playlist-list" id="playlistList">
+					<div class="empty-state small">
+						<p>No tracks added yet</p>
+					</div>
+				</div>
+				<div class="playlist-actions">
+					<button id="createPlaylistFromSelectionBtn" class="btn btn-primary btn-full">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="2" stroke-linecap="round">
+							<circle cx="12" cy="12" r="10" />
+							<line x1="12" y1="8" x2="12" y2="16" />
+							<line x1="8" y1="12" x2="16" y2="12" />
+						</svg>
+						Create Spotify Playlist
+					</button>
+				</div>
+			</aside>
+		</main>
 	</div>
 
-	<div id="results"></div>
+	<!-- Playlist name modal -->
+	<div id="playlistModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true"
+		aria-labelledby="playlistModalTitle">
+		<div class="modal-overlay"></div>
+		<div class="modal-content">
+			<h3 id="playlistModalTitle">Create Playlist</h3>
+			<p class="muted">Create a new playlist or add selected tracks to an existing one.</p>
+			<div class="form-group">
+				<div class="picker-tabs">
+					<button class="picker-tab active" data-target="playlistCreatePanel">Create New</button>
+					<button class="picker-tab" data-target="playlistExistingPanel">Add to Existing</button>
+				</div>
+				<div id="playlistCreatePanel" class="picker-panel active">
+					<input id="playlistNameInput" placeholder="My Playlist" />
+				</div>
+				<div id="playlistExistingPanel" class="picker-panel">
+					<div class="picker-list" id="playlistPickerList">
+						<div class="picker-loading">
+							<div class="spinner"></div> Loading playlists…
+						</div>
+					</div>
+					<div class="picker-panel">
+						<input id="playlistPickerUrlInput" placeholder="Paste playlist URL or ID…" />
+					</div>
+					<input type="hidden" id="playlistPickerSelectedId" />
+				</div>
+			</div>
+			<div class="modal-actions">
+				<button id="playlistCancelBtn" class="btn btn-ghost">Cancel</button>
+				<button id="playlistCreateBtn" class="btn btn-primary">Create</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- More Tools Modal -->
+	<div id="toolsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true"
+		aria-labelledby="toolsModalTitle">
+		<div class="modal-overlay"></div>
+		<div class="modal-content">
+			<h3 id="toolsModalTitle">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+					stroke-linecap="round">
+					<path
+						d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+				</svg>
+				Playlist Tools
+			</h3>
+			<div class="tools-grid">
+				<button id="deleteDuplicatesBtn" class="tool-card">
+					<div class="tool-card-icon">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="2" stroke-linecap="round">
+							<polyline points="3 6 5 6 21 6" />
+							<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+							<line x1="10" y1="11" x2="10" y2="17" />
+							<line x1="14" y1="11" x2="14" y2="17" />
+						</svg>
+					</div>
+					<div class="tool-card-text">
+						<strong>Delete Duplicates</strong>
+						<span>Remove duplicate tracks from any playlist</span>
+					</div>
+				</button>
+				<button id="copyPlaylistBtn" class="tool-card">
+					<div class="tool-card-icon">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="2" stroke-linecap="round">
+							<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+							<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+						</svg>
+					</div>
+					<div class="tool-card-text">
+						<strong>Copy Playlist</strong>
+						<span>Copy songs from one playlist to another</span>
+					</div>
+				</button>
+				<!-- Add more tools here -->
+			</div>
+			<div class="modal-actions">
+				<button id="toolsCloseBtn" class="btn btn-ghost">Close</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Delete Duplicates Modal -->
+	<div id="deleteDuplicatesModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true"
+		aria-labelledby="deleteDuplicatesModalTitle">
+		<div class="modal-overlay"></div>
+		<div class="modal-content">
+			<h3 id="deleteDuplicatesModalTitle">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+					stroke-linecap="round">
+					<polyline points="3 6 5 6 21 6" />
+					<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+				</svg>
+				Delete Duplicates
+			</h3>
+			<div class="form-group">
+				<label>Playlist to clean</label>
+				<div class="picker-tabs">
+					<button class="picker-tab active" data-target="dupPlaylistPicker">My Playlists</button>
+					<button class="picker-tab" data-target="dupPlaylistUrl">Paste URL</button>
+				</div>
+				<div id="dupPlaylistPicker" class="picker-panel active">
+					<div class="picker-list" id="dupPlaylistList">
+						<div class="picker-loading">
+							<div class="spinner"></div> Loading playlists…
+						</div>
+					</div>
+				</div>
+				<div id="dupPlaylistUrl" class="picker-panel">
+					<input id="dupPlaylistIdInput" placeholder="Paste playlist URL or ID…" />
+				</div>
+				<input type="hidden" id="dupSelectedPlaylistId" />
+			</div>
+			<div class="form-group">
+				<label>Reference playlist <span class="label-optional">(optional)</span></label>
+				<div class="picker-tabs">
+					<button class="picker-tab active" data-target="dupRefPicker">My Playlists</button>
+					<button class="picker-tab" data-target="dupRefUrl">Paste URL</button>
+				</div>
+				<div id="dupRefPicker" class="picker-panel active">
+					<div class="picker-list" id="dupRefList">
+						<div class="picker-loading">
+							<div class="spinner"></div> Loading playlists…
+						</div>
+					</div>
+				</div>
+				<div id="dupRefUrl" class="picker-panel">
+					<input id="dupReferenceIdInput" placeholder="Paste reference playlist URL or ID…" />
+				</div>
+				<input type="hidden" id="dupSelectedRefId" />
+				<span class="form-hint">If set, songs present in the reference will be removed from the target.</span>
+			</div>
+			<div class="modal-actions">
+				<button id="deleteDuplicatesCancelBtn" class="btn btn-ghost">Cancel</button>
+				<button id="deleteDuplicatesConfirmBtn" class="btn btn-danger">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round">
+						<polyline points="3 6 5 6 21 6" />
+						<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+					</svg>
+					Delete Duplicates
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Copy Playlist Modal -->
+	<div id="copyPlaylistModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true"
+		aria-labelledby="copyPlaylistModalTitle">
+		<div class="modal-overlay"></div>
+		<div class="modal-content">
+			<h3 id="copyPlaylistModalTitle">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+					stroke-linecap="round">
+					<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+				</svg>
+				Copy Playlist
+			</h3>
+			<div class="form-group">
+				<label>Source playlist</label>
+				<div class="picker-tabs">
+					<button class="picker-tab active" data-target="copySrcPicker">My Playlists</button>
+					<button class="picker-tab" data-target="copySrcUrl">Paste URL</button>
+				</div>
+				<div id="copySrcPicker" class="picker-panel active">
+					<div class="picker-list" id="copySrcList">
+						<div class="picker-loading">
+							<div class="spinner"></div> Loading playlists…
+						</div>
+					</div>
+				</div>
+				<div id="copySrcUrl" class="picker-panel">
+					<input id="sourcePlaylistIdInput" placeholder="Paste source playlist URL or ID…" />
+				</div>
+				<input type="hidden" id="copySelectedSrcId" />
+			</div>
+			<div class="form-group">
+				<label>Target playlist</label>
+				<div class="picker-tabs">
+					<button class="picker-tab active" data-target="copyTgtPicker">My Playlists</button>
+					<button class="picker-tab" data-target="copyTgtUrl">Paste URL</button>
+				</div>
+				<div id="copyTgtPicker" class="picker-panel active">
+					<div class="picker-list" id="copyTgtList">
+						<div class="picker-loading">
+							<div class="spinner"></div> Loading playlists…
+						</div>
+					</div>
+				</div>
+				<div id="copyTgtUrl" class="picker-panel">
+					<input id="targetPlaylistIdInput" placeholder="Paste target playlist URL or ID…" />
+				</div>
+				<input type="hidden" id="copySelectedTgtId" />
+			</div>
+			<div class="form-group">
+				<label for="copyOrderDropdown">Order to add songs</label>
+				<select id="copyOrderDropdown" class="select-control">
+					<option value="recently_added" selected>Recently Added (add to top)</option>
+					<option value="original">Original Playlist Order</option>
+					<option value="reverse">Reverse Order</option>
+				</select>
+				<span class="form-hint">"Recently Added" adds songs one-by-one in reverse so they appear correct when
+					sorted by date in Spotify.</span>
+			</div>
+			<div class="modal-actions">
+				<button id="copyPlaylistCancelBtn" class="btn btn-ghost">Cancel</button>
+				<button id="copyPlaylistConfirmBtn" class="btn btn-primary">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round">
+						<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+					</svg>
+					Copy Songs
+				</button>
+			</div>
+		</div>
+	</div>
 
 	<script src="app.js"></script>
 </body>
