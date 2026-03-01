@@ -3,7 +3,7 @@ console.log("TrackFinder loaded");
 // ===========================================
 // Config
 // ===========================================
-const AUTH_SERVER = 'http://localhost:3000';
+const AUTH_SERVER = 'https://trackfinder-9zqy.onrender.com';
 const urlParams = new URLSearchParams(window.location.search);
 const authCode = urlParams.get('code');
 
