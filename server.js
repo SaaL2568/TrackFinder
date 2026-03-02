@@ -7,9 +7,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+console.log("REDIRECT_URI:", process.env.REDIRECT_URI);
+
 app.post('/auth/exchange', async (req, res) => {
 	const { code } = req.body;
-	if (!code) return res.status(400).json({ error: 'missing_code' });
+	if (!code) return res.status(s400).json({ error: 'missing_code' });
 
 	const params = new URLSearchParams();
 	params.append('grant_type', 'authorization_code');

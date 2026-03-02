@@ -11,7 +11,7 @@ let accessToken = localStorage.getItem('access_token') || null;
 let refreshToken = localStorage.getItem('refresh_token') || null;
 
 const clientId = 'c9e5b2ef41844eb582938eb497f11339';
-const redirectUri = 'https://saal2568.github.io/TrackFinder/';
+const redirectUri = "https://saal2568.github.io/TrackFinder/";
 
 // ===========================================
 // Utility: Extract Playlist ID from URL/URI/ID
